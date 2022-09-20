@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #mycanvas {
+            border: 2px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="mycanvas" width="600" height="600">
+    </canvas>
+    <script>
+        const kanvas = document.querySelector("#mycanvas");
+        console.log(kanvas);
+        const ctx = kanvas.getContext("2d");
+
+        // ctx.fillRect(0,0,100,100);
+
+        // ambil data
+        let dataGambar = ctx.getImageData(0,0,kanvas.width, kanvas.height);
+
+        // membuat sebuah function / i = x + (y . w) + 4
+        function gbr_titik(datanya, posisi, warna){
+            // let x = posisi.x;
+            // let y = posisi.y;
+            let {x, y} = posisi;
+            let {r, g, b} = warna;
+            let index = (x + y * kanvas.width) * 4;
+            datanya.data[index] = r;
+            datanya.data[index+1] = g;
+            datanya.data[index+2] = b;
+            datanya.data[index+3] = 255;
+        }
+        
+        // membuat kotak
+        // for (let j = 0; j<100; j++){
+        //     for (let i = 0;i<100;i++){
+        //         gbr_titik(dataGambar, {x:100 + i,y:50+j}, {r:255,g:0,b:0});
+        //     }
+        // }
+        function garis(datanya, awal, akhir, warnanya){
+                let [x1, y1] = awal;
+                let [x2, y2] = akhir;
+                let [r, g, b] = warnanya;
+
+                let dx = x2-x1;
+                let dy = y2-y1;
+                // console.log(`${dx} ${dy}`)
+                if (Math.abs(dy) > Math.abs(dx)){
+                    // jalan berdasarkan y
+                    if (y2>y1) {
+                        let x = x1;
+                        for (let y = y1;y<y2;y++){
+                        x += dx/Math.abs(dy); 
+                        // pake math.round biar ga putus2
+                        gbr_titik(datanya, {x:Math.round(x),y:Math.round(y)}, {r:r,g:g,b:b});
+                        }
+                    }
+                    else {
+                        for (let y = y1;y>y2;y--){
+                        x += dx/Math.abs(dy); 
+                        gbr_titik(datanya, {x:Math.round(x),y:Math.round(y)}, {r:r,g:g,b:b});
+                        }
+                    }
+                }   
+                else {
+                    // jalan berdasarkan x
+                    if (x2>x1) {
+                        let y = y1;
+                        for (let x = x1;x<x2;x++){
+                        y += dy/Math.abs(dx); 
+                        // pake math.round biar ga putus2
+                        gbr_titik(datanya, {x:Math.round(x),y:Math.round(y)}, {r:r,g:g,b:b});
+                        }
+                    }
+                    else {
+                        for (let x = x1;x>x2;x--){
+                        y += dy/Math.abs(dx); 
+                        gbr_titik(datanya, {x:Math.round(x),y:Math.round(y)}, {r:r,g:g,b:b});
+                        }
+                    }
+                }
+            }
+    
+        garis(dataGambar, [100,175], [150,150], [255,0,0]); // garis miring kiri
+        garis(dataGambar, [100,175], [150,200], [255,0,0]); // garis miring kiri
+        garis(dataGambar, [200,150], [250,175], [255,0,0]); // garis miring kanan
+        garis(dataGambar, [200,200], [250,175], [255,0,0]); // garis miring kanan
+        
+        garis(dataGambar, [150,150], [150,200], [255,0,0]); // garis lurus bawah
+        garis(dataGambar, [150,150], [200,150], [255,0,0]); // garis lurus miring
+        garis(dataGambar, [200,150], [200,200], [255,0,0]); // garis lurus bawah
+        garis(dataGambar, [150,200], [200,200], [255,0,0]); // garis lurus miring
+        
+
+        ctx.putImageData(dataGambar,0,0);
+        
+</script>
+</body>
+</html>
